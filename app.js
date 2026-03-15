@@ -694,6 +694,49 @@ document.addEventListener('change', e => {
   }
 });
 
+// ---- Export ----
+function exportData() {
+  const exportObj = { exportDate: new Date().toISOString(), days: {}, weeklyReviews: {}, debtPayments: [] };
+
+  // Collect all day-* keys from localStorage
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('day-')) {
+      exportObj.days[key.replace('day-', '')] = JSON.parse(localStorage.getItem(key));
+    } else if (key.startsWith('weekly-')) {
+      exportObj.weeklyReviews[key.replace('weekly-', '')] = JSON.parse(localStorage.getItem(key));
+    } else if (key === 'debt-payments') {
+      exportObj.debtPayments = JSON.parse(localStorage.getItem(key));
+    }
+  }
+
+  const json = JSON.stringify(exportObj, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const filename = `neural-export-${today()}.json`;
+
+  // Try Web Share API first (works great on iOS for AirDrop/Files)
+  if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/json' })] })) {
+    const file = new File([blob], filename, { type: 'application/json' });
+    navigator.share({ files: [file], title: 'Neural Architecture Export' })
+      .then(() => showToast('Exported'))
+      .catch(() => fallbackDownload(blob, filename));
+  } else {
+    fallbackDownload(blob, filename);
+  }
+}
+
+function fallbackDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Downloaded');
+}
+
 // ---- Service Worker ----
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
