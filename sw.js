@@ -1,10 +1,10 @@
 const CACHE_NAME = 'neural-arch-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json'
+  '/neural-architecture/',
+  '/neural-architecture/index.html',
+  '/neural-architecture/style.css',
+  '/neural-architecture/app.js',
+  '/neural-architecture/manifest.json'
 ];
 
 self.addEventListener('install', e => {

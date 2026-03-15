@@ -2,7 +2,7 @@
   "name": "Neural Architecture",
   "short_name": "Neural",
   "description": "Daily companion for the Neural Architecture Lifestyle Protocol",
-  "start_url": "/",
+  "start_url": "/neural-architecture/",
   "display": "standalone",
   "background_color": "#0c1220",
   "theme_color": "#0c1220",
