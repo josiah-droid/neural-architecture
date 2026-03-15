@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0c1220">
+  <title>Neural Architecture</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Today View -->
+    <section id="view-today" class="view active">
+      <header class="view-header">
+        <div class="header-top">
+          <div>
+            <h1 class="logo">Neural Architecture</h1>
+            <p class="phase-badge" id="phase-badge">Phase 1 — San Diego Reset</p>
+          </div>
+          <div class="streak-badge" id="streak-badge">
+            <span class="streak-number" id="streak-number">0</span>
+            <span class="streak-label">day streak</span>
+          </div>
+        </div>
+        <p class="date-line" id="date-line"></p>
+      </header>
+
+      <div class="content">
+        <!-- Quick Status Cards -->
+        <div class="status-grid">
+          <div class="status-card" id="sleep-status">
+            <div class="status-icon">🌙</div>
+            <div class="status-label">Sleep</div>
+            <div class="status-value" id="sleep-status-val">—</div>
+          </div>
+          <div class="status-card" id="mood-status">
+            <div class="status-icon">◉</div>
+            <div class="status-label">Mood</div>
+            <div class="status-value" id="mood-status-val">—</div>
+          </div>
+          <div class="status-card" id="supps-status">
+            <div class="status-icon">⚡</div>
+            <div class="status-label">Supps</div>
+            <div class="status-value" id="supps-status-val">—</div>
+          </div>
+          <div class="status-card" id="move-status">
+            <div class="status-icon">🏄</div>
+            <div class="status-label">Movement</div>
+            <div class="status-value" id="move-status-val">—</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+          <h2 class="section-title">Quick Actions</h2>
+          <button class="action-btn primary" onclick="navigateTo('checkin')">
+            <span class="action-icon" id="checkin-action-icon">☀️</span>
+            <div class="action-text">
+              <span class="action-title" id="checkin-action-title">Morning Check-In</span>
+              <span class="action-sub" id="checkin-action-sub">Start your day with intention</span>
+            </div>
+            <span class="action-arrow">›</span>
+          </button>
+          <button class="action-btn" onclick="navigateTo('supplements')">
+            <span class="action-icon">💊</span>
+            <div class="action-text">
+              <span class="action-title">Supplements</span>
+              <span class="action-sub" id="supps-action-sub">Track today's stack</span>
+            </div>
+            <span class="action-arrow">›</span>
+          </button>
+          <button class="action-btn" onclick="navigateTo('schedule')">
+            <span class="action-icon">📋</span>
+            <div class="action-text">
+              <span class="action-title">Daily Schedule</span>
+              <span class="action-sub">Your daily architecture</span>
+            </div>
+            <span class="action-arrow">›</span>
+          </button>
+        </div>
+
+        <!-- Today's Priorities -->
+        <div class="section" id="priorities-section" style="display:none;">
+          <h2 class="section-title">Today's Priorities</h2>
+          <div id="priorities-list" class="priorities-list"></div>
+        </div>
+
+        <!-- Non-Negotiables -->
+        <div class="section">
+          <h2 class="section-title">Non-Negotiables</h2>
+          <div class="non-neg-list" id="non-neg-list"></div>
+        </div>
+
+        <!-- Weekly Review Prompt (Sundays) -->
+        <div class="section" id="weekly-review-prompt" style="display:none;">
+          <button class="action-btn warning" onclick="navigateTo('review')">
+            <span class="action-icon">📊</span>
+            <div class="action-text">
+              <span class="action-title">Weekly Review</span>
+              <span class="action-sub">Sunday self-monitoring check</span>
+            </div>
+            <span class="action-arrow">›</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Check-In View -->
+    <section id="view-checkin" class="view">
+      <header class="view-header compact">
+        <button class="back-btn" onclick="navigateTo('today')">‹ Back</button>
+        <h1 id="checkin-title">Morning Check-In</h1>
+      </header>
+      <div class="content" id="checkin-content">
+        <!-- Morning Check-In -->
+        <div id="morning-checkin">
+          <div class="checkin-group">
+            <label class="checkin-label">Wake Time</label>
+            <input type="time" id="wake-time" class="checkin-input" value="06:00">
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Sunlight within 15 min?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="sunlight" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="sunlight" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">How do you feel?</label>
+            <div class="mood-row">
+              <button class="mood-btn" data-value="1">1</button>
+              <button class="mood-btn" data-value="2">2</button>
+              <button class="mood-btn" data-value="3">3</button>
+              <button class="mood-btn" data-value="4">4</button>
+              <button class="mood-btn" data-value="5">5</button>
+            </div>
+            <div class="mood-labels">
+              <span>Rough</span><span>Great</span>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Adderall today?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="adderall" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="adderall" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Top 3 Priorities</label>
+            <input type="text" id="priority-1" class="checkin-input text" placeholder="Priority 1">
+            <input type="text" id="priority-2" class="checkin-input text" placeholder="Priority 2">
+            <input type="text" id="priority-3" class="checkin-input text" placeholder="Priority 3">
+          </div>
+
+          <button class="save-btn" onclick="saveMorningCheckin()">Lock In Morning</button>
+        </div>
+
+        <!-- Evening Check-In -->
+        <div id="evening-checkin" style="display:none;">
+          <div class="checkin-group">
+            <label class="checkin-label">Bedtime last night</label>
+            <input type="time" id="bed-time" class="checkin-input" value="22:30">
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Sleep quality</label>
+            <div class="mood-row">
+              <button class="mood-btn" data-value="1" data-field="sleep-quality">1</button>
+              <button class="mood-btn" data-value="2" data-field="sleep-quality">2</button>
+              <button class="mood-btn" data-value="3" data-field="sleep-quality">3</button>
+              <button class="mood-btn" data-value="4" data-field="sleep-quality">4</button>
+              <button class="mood-btn" data-value="5" data-field="sleep-quality">5</button>
+            </div>
+            <div class="mood-labels"><span>Poor</span><span>Excellent</span></div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Phone out of room by 10 PM?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="phone-out" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="phone-out" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Work stopped by 9 PM?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="work-stop" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="work-stop" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Caffeine before noon only?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="caffeine" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="caffeine" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Drinks today</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="alcohol" data-value="0">0</button>
+              <button class="toggle-btn" data-field="alcohol" data-value="1">1</button>
+              <button class="toggle-btn" data-field="alcohol" data-value="2">2</button>
+              <button class="toggle-btn" data-field="alcohol" data-value="3+">3+</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Movement today</label>
+            <div class="toggle-row multi">
+              <button class="toggle-btn multi" data-field="movement" data-value="surf">Surf</button>
+              <button class="toggle-btn multi" data-field="movement" data-value="gym">Gym</button>
+              <button class="toggle-btn multi" data-field="movement" data-value="bodyweight">Bodyweight</button>
+              <button class="toggle-btn multi" data-field="movement" data-value="walk">Walk</button>
+              <button class="toggle-btn multi" data-field="movement" data-value="none">None</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Stimulation chasing today?</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="stim-chase" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="stim-chase" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Creative time? (guitar, music, art)</label>
+            <div class="toggle-row">
+              <button class="toggle-btn" data-field="creative" data-value="yes">Yes</button>
+              <button class="toggle-btn" data-field="creative" data-value="no">No</button>
+            </div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">End of day mood</label>
+            <div class="mood-row">
+              <button class="mood-btn" data-value="1" data-field="evening-mood">1</button>
+              <button class="mood-btn" data-value="2" data-field="evening-mood">2</button>
+              <button class="mood-btn" data-value="3" data-field="evening-mood">3</button>
+              <button class="mood-btn" data-value="4" data-field="evening-mood">4</button>
+              <button class="mood-btn" data-value="5" data-field="evening-mood">5</button>
+            </div>
+            <div class="mood-labels"><span>Rough</span><span>Great</span></div>
+          </div>
+
+          <div class="checkin-group">
+            <label class="checkin-label">Reflection (optional)</label>
+            <textarea id="evening-reflection" class="checkin-textarea" placeholder="What went well? What could be better?"></textarea>
+          </div>
+
+          <button class="save-btn" onclick="saveEveningCheckin()">Complete Day</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supplements View -->
+    <section id="view-supplements" class="view">
+      <header class="view-header compact">
+        <button class="back-btn" onclick="navigateTo('today')">‹ Back</button>
+        <h1>Supplements</h1>
+      </header>
+      <div class="content">
+        <div class="section">
+          <h2 class="section-title">Morning — With Breakfast</h2>
+          <div class="supp-list" id="morning-supps">
+            <label class="supp-item"><input type="checkbox" data-supp="omega3"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">EPA Omega-3</span><span class="supp-dose">1.5–2g EPA</span></div></label>
+            <label class="supp-item"><input type="checkbox" data-supp="d3"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">Vitamin D3</span><span class="supp-dose">2000–5000 IU</span></div></label>
+            <label class="supp-item"><input type="checkbox" data-supp="nac1"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">NAC</span><span class="supp-dose">1000mg — dose 1</span></div></label>
+            <label class="supp-item"><input type="checkbox" data-supp="creatine"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">Creatine Monohydrate</span><span class="supp-dose">3–5g</span></div></label>
+          </div>
+        </div>
+        <div class="section">
+          <h2 class="section-title">Afternoon — 2:00 PM</h2>
+          <div class="supp-list">
+            <label class="supp-item"><input type="checkbox" data-supp="nac2"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">NAC</span><span class="supp-dose">1000mg — dose 2</span></div></label>
+          </div>
+        </div>
+        <div class="section">
+          <h2 class="section-title">As Needed</h2>
+          <div class="supp-list">
+            <label class="supp-item"><input type="checkbox" data-supp="theanine"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">L-Theanine</span><span class="supp-dose">200mg — Adderall comedown / afternoon</span></div></label>
+          </div>
+        </div>
+        <div class="section">
+          <h2 class="section-title">Evening — 9:30 PM</h2>
+          <div class="supp-list">
+            <label class="supp-item"><input type="checkbox" data-supp="magnesium"><span class="supp-check"></span><div class="supp-info"><span class="supp-name">Magnesium Threonate</span><span class="supp-dose">300–400mg</span></div></label>
+          </div>
+        </div>
+
+        <div class="avoid-section">
+          <h2 class="section-title">Avoid</h2>
+          <p class="avoid-item">St. John's Wort — hypomania risk</p>
+          <p class="avoid-item">SAMe — mania-triggering potential</p>
+          <p class="avoid-item">High-dose tyrosine / mucuna pruriens — dopamine stacking</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schedule View -->
+    <section id="view-schedule" class="view">
+      <header class="view-header compact">
+        <button class="back-btn" onclick="navigateTo('today')">‹ Back</button>
+        <h1>Daily Architecture</h1>
+      </header>
+      <div class="content">
+        <div class="schedule-list">
+          <div class="sched-item wake"><div class="sched-time">5:45 AM</div><div class="sched-body"><div class="sched-title">Wake. Sunlight. Hydrate.</div><div class="sched-note">Glass of water with electrolytes</div></div></div>
+          <div class="sched-item move"><div class="sched-time">6:00</div><div class="sched-body"><div class="sched-title">Surf Session</div><div class="sched-note">Primary circadian + dopamine reset</div></div></div>
+          <div class="sched-item fuel"><div class="sched-time">7:30</div><div class="sched-body"><div class="sched-title">Breakfast + Supplements</div><div class="sched-note">High protein, complex carbs, eggs. Omega-3, D3, NAC, creatine.</div></div></div>
+          <div class="sched-item work"><div class="sched-time">8:30</div><div class="sched-body"><div class="sched-title">Deep Work Block 1</div><div class="sched-note">Highest cognitive demand. Supplement company, dev, complex problems.</div><div class="sched-duration">4 hours</div></div></div>
+          <div class="sched-item fuel"><div class="sched-time">12:30</div><div class="sched-body"><div class="sched-title">Lunch — Away from Screens</div><div class="sched-note">No working lunch. Actual break.</div></div></div>
+          <div class="sched-item work"><div class="sched-time">1:30</div><div class="sched-body"><div class="sched-title">Deep Work Block 2</div><div class="sched-note">Brain Capital, agency, communications. NAC dose 2 at 2 PM.</div><div class="sched-duration">3.5 hours</div></div></div>
+          <div class="sched-item move"><div class="sched-time">5:00</div><div class="sched-body"><div class="sched-title">Workout or Second Surf</div><div class="sched-note">Non-negotiable movement. Physical transition out of work.</div></div></div>
+          <div class="sched-item fuel"><div class="sched-time">6:30</div><div class="sched-body"><div class="sched-title">Dinner</div><div class="sched-note">Whole foods, fish or quality protein. Last caffeine was before noon.</div></div></div>
+          <div class="sched-item wind"><div class="sched-time">7:30</div><div class="sched-body"><div class="sched-title">Light Work / Step-Down</div><div class="sched-note">Admin, planning, guitar. L-theanine if wired.</div></div></div>
+          <div class="sched-item boundary"><div class="sched-time">9:00</div><div class="sched-body"><div class="sched-title">Work Stops</div><div class="sched-note">Screens to night mode. Hard boundary.</div></div></div>
+          <div class="sched-item wind"><div class="sched-time">9:30</div><div class="sched-body"><div class="sched-title">Magnesium Threonate</div><div class="sched-note">Supports sleep onset.</div></div></div>
+          <div class="sched-item sleep"><div class="sched-time">10:00</div><div class="sched-body"><div class="sched-title">Phone in Another Room</div><div class="sched-note">Read, stretch, journal. Nothing analytical.</div></div></div>
+          <div class="sched-item sleep"><div class="sched-time">10:30</div><div class="sched-body"><div class="sched-title">Lights Out</div><div class="sched-note">Same time every night. No exceptions.</div></div></div>
+        </div>
+        <div class="schedule-summary">
+          <p>~7.5 hrs deep work · 7+ hrs sleep · 2 physical sessions · structured transitions</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Review View -->
+    <section id="view-review" class="view">
+      <header class="view-header compact">
+        <button class="back-btn" onclick="navigateTo('today')">‹ Back</button>
+        <h1>Weekly Review</h1>
+      </header>
+      <div class="content">
+        <p class="review-intro">Sunday self-monitoring. 5 minutes. Honest answers.<br>If 3+ areas flag, pay attention.</p>
+
+        <div class="review-question">
+          <h3>1. Sleep</h3>
+          <p>Hitting sleep window consistently?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-sleep" data-value="yes">Yes</button><button class="toggle-btn" data-field="r-sleep" data-value="mostly">Mostly</button><button class="toggle-btn" data-field="r-sleep" data-value="no">No</button></div>
+          <p class="flag-note">Sleeping less and feeling fine? That's a <strong>yellow flag</strong>, not green.</p>
+        </div>
+
+        <div class="review-question">
+          <h3>2. Projects</h3>
+          <p>Starting new things without finishing existing ones?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-projects" data-value="no">No</button><button class="toggle-btn" data-field="r-projects" data-value="maybe">Maybe</button><button class="toggle-btn" data-field="r-projects" data-value="yes">Yes</button></div>
+        </div>
+
+        <div class="review-question">
+          <h3>3. Social Energy</h3>
+          <p>More talkative than usual? Getting feedback you're intense?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-social" data-value="normal">Normal</button><button class="toggle-btn" data-field="r-social" data-value="elevated">Elevated</button></div>
+        </div>
+
+        <div class="review-question">
+          <h3>4. Spending</h3>
+          <p>Impulsive purchases this week?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-spending" data-value="no">No</button><button class="toggle-btn" data-field="r-spending" data-value="yes">Yes</button></div>
+          <div class="checkin-group" style="margin-top:0.5rem;">
+            <label class="checkin-label" style="font-size:0.85rem;">Debt payment this week: $</label>
+            <input type="number" id="r-debt-payment" class="checkin-input text" placeholder="0" style="max-width:120px;">
+          </div>
+        </div>
+
+        <div class="review-question">
+          <h3>5. Irritability</h3>
+          <p>Shorter with people than baseline?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-irritability" data-value="no">No</button><button class="toggle-btn" data-field="r-irritability" data-value="yes">Yes</button></div>
+        </div>
+
+        <div class="review-question">
+          <h3>6. Stimulation</h3>
+          <p>Chasing input compulsively? Phone, restlessness?</p>
+          <div class="toggle-row"><button class="toggle-btn" data-field="r-stimulation" data-value="no">No</button><button class="toggle-btn" data-field="r-stimulation" data-value="yes">Yes</button></div>
+        </div>
+
+        <div class="flag-counter" id="flag-counter">
+          <span class="flag-count" id="flag-count">0</span> / 6 flags
+          <p class="flag-message" id="flag-message"></p>
+        </div>
+
+        <div class="checkin-group">
+          <label class="checkin-label">Key insight this week</label>
+          <textarea id="r-insight" class="checkin-textarea" placeholder="What pattern did you notice?"></textarea>
+        </div>
+
+        <button class="save-btn" onclick="saveWeeklyReview()">Save Weekly Review</button>
+      </div>
+    </section>
+
+    <!-- Progress View -->
+    <section id="view-progress" class="view">
+      <header class="view-header compact">
+        <button class="back-btn" onclick="navigateTo('today')">‹ Back</button>
+        <h1>Progress</h1>
+      </header>
+      <div class="content">
+        <div class="section">
+          <h2 class="section-title">Streaks</h2>
+          <div class="streak-grid">
+            <div class="streak-card"><div class="streak-card-num" id="streak-sleep">0</div><div class="streak-card-label">Sleep on time</div></div>
+            <div class="streak-card"><div class="streak-card-num" id="streak-alcohol">0</div><div class="streak-card-label">Days no alcohol</div></div>
+            <div class="streak-card"><div class="streak-card-num" id="streak-movement">0</div><div class="streak-card-label">Days moved</div></div>
+            <div class="streak-card"><div class="streak-card-num" id="streak-checkin">0</div><div class="streak-card-label">Check-in streak</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Last 7 Days — Mood</h2>
+          <div class="chart-container" id="mood-chart"></div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Last 7 Days — Sleep Hours</h2>
+          <div class="chart-container" id="sleep-chart"></div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Protocol Compliance</h2>
+          <div class="compliance-bars" id="compliance-bars"></div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Financial Progress</h2>
+          <div class="debt-tracker">
+            <div class="debt-bar-container">
+              <div class="debt-bar" id="debt-bar"></div>
+            </div>
+            <p class="debt-label"><span id="debt-remaining">$3,500</span> remaining</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="today" onclick="navigateTo('today')">
+      <span class="nav-icon">◎</span>
+      <span class="nav-label">Today</span>
+    </button>
+    <button class="nav-btn" data-view="checkin" onclick="navigateTo('checkin')">
+      <span class="nav-icon">✎</span>
+      <span class="nav-label">Check-In</span>
+    </button>
+    <button class="nav-btn" data-view="supplements" onclick="navigateTo('supplements')">
+      <span class="nav-icon">⚡</span>
+      <span class="nav-label">Supps</span>
+    </button>
+    <button class="nav-btn" data-view="progress" onclick="navigateTo('progress')">
+      <span class="nav-icon">📈</span>
+      <span class="nav-label">Progress</span>
+    </button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
